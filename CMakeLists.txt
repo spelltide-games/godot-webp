@@ -52,11 +52,7 @@ target_sources(${LIBNAME}
     ${ALL_SRC}
 )
 
-if(WIN32)
-  set(BUILD_TOOLS_DEFAULT ON)
-else()
-  set(BUILD_TOOLS_DEFAULT OFF)
-endif()
+set(BUILD_TOOLS_DEFAULT OFF)
 
 option(WEBP_LINK_STATIC "" ON)
 option(WEBP_BUILD_ANIM_UTILS "Build animation utilities." ${BUILD_TOOLS_DEFAULT})

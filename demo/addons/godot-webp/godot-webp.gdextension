@@ -14,8 +14,8 @@ macos.arm64.release = "bin/macos/libgodot-webp.macos.template_release.arm64.dyli
 ios.arm64.debug = "bin/ios/libgodot-webp.ios.template_release.arm64.dylib"
 ios.arm64.release = "bin/ios/libgodot-webp.ios.template_release.arm64.dylib"
 
-windows.x86_64.debug = "bin/windows/godot-webp.windows.template_debug.x86_64.dll"
-windows.x86_64.release = "bin/windows/godot-webp.windows.template_debug.x86_64.dll"
+windows.x86_64.debug = "bin/windows/godot-webp.windows.template_release.x86_64.dll"
+windows.x86_64.release = "bin/windows/godot-webp.windows.template_release.x86_64.dll"
 
 android.arm64.debug = "bin/android/libgodot-webp.android.template_release.arm64.so"
 android.arm64.release = "bin/android/libgodot-webp.android.template_release.arm64.so"

@@ -1,7 +1,9 @@
 #include "register_types.h"
+#include "webp_anim_decoder.h"
 
 #include <gdextension_interface.h>
 #include <godot_cpp/classes/editor_plugin_registration.hpp>
+#include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/core/defs.hpp>
 #include <godot_cpp/godot.hpp>
 
@@ -9,7 +11,7 @@ using namespace godot;
 
 static void initialize(ModuleInitializationLevel p_level) {
 	if (p_level == MODULE_INITIALIZATION_LEVEL_SCENE) {
-
+		ClassDB::register_class<godot::WebPAnimDecoder>();
 	}
 }
 

@@ -72,6 +72,7 @@ add_subdirectory(libwebp)
 target_link_libraries(${LIBNAME} PRIVATE
     godot-cpp
     webp
+    webpdemux
 )
 
 set(GODOT_PROJECT_BINARY_DIR "${PROJECT_SOURCE_DIR}/${GODOT_PROJECT_DIR}/addons/godot-webp/bin/${GODOTCPP_PLATFORM}")

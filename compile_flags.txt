@@ -5,4 +5,4 @@
 -Isrc
 -xc++
 -std=c++17
--Igodot-webp/libwebp/src
+-Ilibwebp/src

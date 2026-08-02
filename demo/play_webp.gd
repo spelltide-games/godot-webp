@@ -2,7 +2,7 @@ extends TextureRect
 
 @export var path: String
 
-var player = WebPAnimationPlayer.new()
+var player := WebPAnimationPlayer.new()
 var anim: PackedByteArray
 
 func _ready() -> void:
@@ -10,7 +10,7 @@ func _ready() -> void:
     assert(!anim.is_empty())
 
 # Called when the node enters the scene tree for the first time.
-func _process(delta: float):
+func _process(_delta: float):
     if Input.is_action_just_pressed("ui_accept"):
         if player.is_playing():
             player.stop()

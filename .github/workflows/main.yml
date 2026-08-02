@@ -1,0 +1,150 @@
+name: build
+
+on:
+  push:
+    paths-ignore:
+      - 'docs/**'
+      - '**.md'
+      - '**.json'
+  pull_request:
+    paths-ignore:
+      - 'docs/**'
+      - '**.md'
+      - '**.json'
+
+jobs:
+  build_win32:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+    - uses: ilammy/msvc-dev-cmd@v1
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+    - name: Setup cmake
+      uses: jwlawson/actions-setup-cmake@v2
+      with:
+        cmake-version: '3.26.x'
+    - name: Compile
+      shell: bash
+      run: |
+        python build.py --config Release --platform win32
+    - uses: actions/upload-artifact@v4
+      with:
+        name: windows
+        path: demo/addons/godot-webp/bin/windows
+  build_macos:
+      runs-on: macos-latest
+      steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      - name: Setup cmake
+        uses: jwlawson/actions-setup-cmake@v2
+        with:
+          cmake-version: '3.26.x'
+      - name: Compile
+        run: |
+          python build.py --config Release --platform macos
+      - uses: actions/upload-artifact@v4
+        with:
+          name: macos
+          path: demo/addons/godot-webp/bin/macos
+  build_android:
+      runs-on: ubuntu-latest
+      steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      - name: Setup cmake
+        uses: jwlawson/actions-setup-cmake@v2
+        with:
+          cmake-version: '3.26.x'
+      - uses: nttld/setup-ndk@v1
+        id: setup-ndk
+        with:
+          ndk-version: r23
+          local-cache: false
+          add-to-path: false
+      - name: Compile
+        run: |
+          python build.py --config Release --platform android
+        env:
+          ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android
+          path: demo/addons/godot-webp/bin/android
+  build_ios:
+      runs-on: macos-latest
+      steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      - name: Setup cmake
+        uses: jwlawson/actions-setup-cmake@v2
+        with:
+          cmake-version: '3.26.x'
+      - name: Compile
+        run: |
+          python build.py --config Release --platform ios
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ios
+          path: demo/addons/godot-webp/bin/ios
+  merge:
+      runs-on: ubuntu-latest
+      needs: [ build_win32, build_macos, build_android, build_ios ]
+      steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      - name: "Run stubgen"
+        run: |
+          mkdir -p demo/addons/godot-webp/bin
+          # remove .gitignore
+          rm -f .gitignore
+        
+      - name: "Merge win32"
+        uses: actions/download-artifact@v4.1.7
+        with:
+          name: windows
+          path: demo/addons/godot-webp/bin/windows
+
+      - name: "Merge macos"
+        uses: actions/download-artifact@v4.1.7
+        with:
+          name: macos
+          path: demo/addons/godot-webp/bin/macos
+
+      - name: "Merge android"
+        uses: actions/download-artifact@v4.1.7
+        with:
+          name: android
+          path: demo/addons/godot-webp/bin/android
+          
+      - name: "Merge ios"
+        uses: actions/download-artifact@v4.1.7
+        with:
+          name: ios
+          path: demo/addons/godot-webp/bin/ios
+
+      - name: "Upload merged artifact"
+        uses: actions/upload-artifact@v4.3.3
+        with:
+          name: godot-webp
+          path: demo/addons/godot-webp

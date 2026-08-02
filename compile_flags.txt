@@ -1,0 +1,8 @@
+-Igodot-cpp/gen/include
+-Ibuild/godot-cpp/gen/include
+-Igodot-cpp/include
+-Igodot-cpp/gdextension
+-Isrc
+-xc++
+-std=c++17
+-Igodot-webp/libwebp/src

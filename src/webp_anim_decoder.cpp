@@ -21,7 +21,7 @@ void WebPAnimDecoder::_release() {
 	_anim_info = {};
 }
 
-bool WebPAnimDecoder::load(const PackedByteArray &p_data) {
+bool WebPAnimDecoder::load_bytes(const PackedByteArray &p_data) {
 	_release();
 
 	if (p_data.is_empty()) {
@@ -49,6 +49,9 @@ bool WebPAnimDecoder::load(const PackedByteArray &p_data) {
 		return false;
 	}
 
+	current_image = Image::create_empty(get_canvas_width(), get_canvas_height(), false, Image::FORMAT_RGBA8);
+	current_texture.instantiate();
+	current_texture->set_image(current_image);
 	return true;
 }
 
@@ -85,31 +88,25 @@ bool WebPAnimDecoder::has_more_frames() const {
 	return WebPAnimDecoderHasMoreFrames(_decoder);
 }
 
-Dictionary WebPAnimDecoder::get_next_frame() {
-	Dictionary result;
+int WebPAnimDecoder::get_next_frame() {
 	if (!_decoder) {
-		return result;
+		return -1;
 	}
 
 	uint8_t *buf = nullptr;
 	int timestamp = 0;
 	if (!WebPAnimDecoderGetNext(_decoder, &buf, &timestamp)) {
-		return result;
+		return -1;
 	}
 
 	const int w = get_canvas_width();
 	const int h = get_canvas_height();
 	const int byte_count = w * h * 4; // RGBA
 
-	PackedByteArray frame_data;
-	frame_data.resize(byte_count);
-	memcpy(frame_data.ptrw(), buf, byte_count);
-
-	Ref<Image> img = Image::create_from_data(w, h, false, Image::FORMAT_RGBA8, frame_data);
-
-	result["image"] = img;
-	result["timestamp"] = timestamp;
-	return result;
+	uint8_t* p = current_image->ptrw();
+	std::memcpy(p, buf, byte_count);
+	current_texture->update(current_image);
+	return timestamp;
 }
 
 void WebPAnimDecoder::reset() {
@@ -119,7 +116,7 @@ void WebPAnimDecoder::reset() {
 }
 
 void WebPAnimDecoder::_bind_methods() {
-	ClassDB::bind_method(D_METHOD("load", "data"), &WebPAnimDecoder::load);
+	ClassDB::bind_method(D_METHOD("load_bytes", "data"), &WebPAnimDecoder::load_bytes);
 	ClassDB::bind_method(D_METHOD("get_canvas_width"), &WebPAnimDecoder::get_canvas_width);
 	ClassDB::bind_method(D_METHOD("get_canvas_height"), &WebPAnimDecoder::get_canvas_height);
 	ClassDB::bind_method(D_METHOD("get_loop_count"), &WebPAnimDecoder::get_loop_count);
@@ -127,6 +124,8 @@ void WebPAnimDecoder::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_background_color"), &WebPAnimDecoder::get_background_color);
 	ClassDB::bind_method(D_METHOD("has_more_frames"), &WebPAnimDecoder::has_more_frames);
 	ClassDB::bind_method(D_METHOD("get_next_frame"), &WebPAnimDecoder::get_next_frame);
+	ClassDB::bind_method(D_METHOD("get_current_image"), &WebPAnimDecoder::get_current_image);
+	ClassDB::bind_method(D_METHOD("get_current_texture"), &WebPAnimDecoder::get_current_texture);
 	ClassDB::bind_method(D_METHOD("reset"), &WebPAnimDecoder::reset);
 }
 

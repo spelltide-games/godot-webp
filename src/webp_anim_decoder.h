@@ -1,6 +1,7 @@
 #pragma once
 
 #include <godot_cpp/classes/ref_counted.hpp>
+#include <godot_cpp/classes/image_texture.hpp>
 #include <godot_cpp/variant/packed_byte_array.hpp>
 #include <godot_cpp/variant/dictionary.hpp>
 
@@ -12,12 +13,14 @@ namespace godot {
 class WebPAnimDecoder : public RefCounted {
 	GDCLASS(WebPAnimDecoder, RefCounted)
 
+	Ref<Image> current_image;
+	Ref<ImageTexture> current_texture;
 public:
 	WebPAnimDecoder();
 	~WebPAnimDecoder();
 
 	// Load WebP data. Must be called before any other method.
-	bool load(const PackedByteArray &p_data);
+	bool load_bytes(const PackedByteArray &p_data);
 
 	int get_canvas_width() const;
 	int get_canvas_height() const;
@@ -26,8 +29,9 @@ public:
 	Color get_background_color() const;
 
 	bool has_more_frames() const;
-	// Returns {"image": Image, "timestamp": int} or empty dict on failure.
-	Dictionary get_next_frame();
+	int get_next_frame();
+	Ref<Image> get_current_image() const { return current_image; }
+	Ref<ImageTexture> get_current_texture() const { return current_texture; }
 	void reset();
 
 protected:

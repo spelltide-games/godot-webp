@@ -9,7 +9,7 @@ func is_playing() -> bool:
     return _is_playing
 
 func play(node: Node, b: PackedByteArray, frame_rate: float, loop: bool, debug: bool):
-    while loop:
+    while true:
         var st = Time.get_ticks_msec()
         var decoding_ms = 0.0
         if not _dec.load_bytes(b):
@@ -39,6 +39,8 @@ func play(node: Node, b: PackedByteArray, frame_rate: float, loop: bool, debug: 
             decoding_ms = 0
 
         if !_is_playing:
+            break
+        if !loop:
             break
     _is_playing = false
 
